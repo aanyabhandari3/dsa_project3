@@ -1,0 +1,114 @@
+VBA Code
+
+Sub CheckDecimalsRow()
+    Dim ws As Worksheet
+    Dim lastRow As Long, lastCol As Long
+    Dim r As Long, c As Long
+    Dim foundDecimal As Boolean
+
+    ' Set your worksheet
+    Set ws = ThisWorkbook.Sheets("Large_Bird_Text")
+
+    ' Get the last row and column
+    lastRow = ws.Cells(ws.Rows.Count, 2).End(xlUp).Row
+    lastCol = 69
+
+    ' Loop each row
+    For r = 1 To lastRow
+        foundDecimal = False
+        ' Loop each column
+        For c = 1 To lastCol
+            If IsNumeric(ws.Cells(r, c).Value) Then
+                ' Check if the value has a decimal
+                If ws.Cells(r, c).Value - Int(ws.Cells(r, c).Value) <> 0 Then
+                    ' Print the decimal value in column BS
+                    ws.Cells(r, 71).Value = ws.Cells(r, c).Value
+                    foundDecimal = True
+                    Exit For ' Stop checking further columns
+                End If
+            End If
+        Next c
+
+        ' If no decimal was found, leave column BS blank
+        If Not foundDecimal Then
+            ws.Cells(r, 71).Value = "No Decimal Found"
+        End If
+    Next r
+End Sub
+
+Sub CheckDecimalsRow2()
+    Dim ws As Worksheet
+    Dim lastRow As Long, lastCol As Long
+    Dim r As Long, c As Long
+    Dim foundDecimal As Boolean
+
+    
+    Set ws = ThisWorkbook.Sheets("Large_Bird_Text")
+    
+    lastRow = ws.Cells(ws.Rows.Count, 2).End(xlUp).Row
+    lastCol = 69
+
+    ' Loop each row
+    For r = 1 To lastRow
+        foundDecimal = False
+        ' Loop each column
+        For c = 1 To lastCol
+            If IsNumeric(ws.Cells(r, c).Value) Then
+                ' Check if value has a decimal
+                If ws.Cells(r, c).Value - Int(ws.Cells(r, c).Value) <> 0 Then
+                    ' Print the decimal value in column BT
+                    ws.Cells(r, 72).Value = ws.Cells(r, c + 1).Value
+                    foundDecimal = True
+                    Exit For ' Stop checking further columns
+                End If
+            End If
+        Next c
+
+        ' If no decimal was found, leave column BT blank
+        If Not foundDecimal Then
+            ws.Cells(r, 72).Value = "No Decimal Found"
+        End If
+    Next r
+End Sub
+
+
+Sub DeleteRowsWithoutDecimal()
+    Dim ws As Worksheet
+    Dim lastRow As Long
+    Dim currentr As Long
+    Dim hasDecimal As Boolean
+
+    
+    Set ws = ThisWorkbook.Sheets("Bird_Data_Parsed")
+
+    
+    lastRow = ws.Cells(ws.Rows.Count, 1).End(xlUp).row
+
+    ' Loop rows
+    For currentr = lastRow To 1 Step -1
+        hasDecimal = True
+        
+        ' Check column A
+        If Len(Trim(ws.Cells(currentr, 1).Value)) = 0 Or Not IsNumeric(ws.Cells(currentr, 1).Value) Then
+            hasDecimal = False
+        ElseIf ws.Cells(currentr, 1).Value - Int(ws.Cells(currentr, 1).Value) = 0 Then
+            hasDecimal = False
+        End If
+
+        ' Check column B
+        If Len(Trim(ws.Cells(currentr, 2).Value)) = 0 Or Not IsNumeric(ws.Cells(currentr, 2).Value) Then
+            hasDecimal = False
+        ElseIf ws.Cells(currentr, 2).Value - Int(ws.Cells(currentr, 2).Value) = 0 Then
+            hasDecimal = False
+        End If
+
+        ' Delete the row if necessary
+        If Not hasDecimal Then
+            ws.Rows(currentr).Delete
+        End If
+    Next currentr
+End Sub
+
+
+
+
