@@ -1,7 +1,7 @@
 """main.py: DSA Project 3 - Implementation testing."""
 
 __author__ = "Preston Hemmy"
-__version__ = "2.0"
+__version__ = "3.0"
 
 from point import Point
 from bounding_box import BoundingBox
@@ -39,11 +39,35 @@ def main():
         Point(5,30),
     ]
 
+    # test insert
     for point in points:
         tree.insert(point)
 
     print("Quadtree structure:")
     print_tree(tree.root)
+
+    # test search
+    search_point = Point(20, 60)
+    found_point = tree.search(search_point)
+    print(f"\nSearch for point ({search_point.x}, {search_point.y})")
+    if found_point:
+        print("Point found!")
+    else:
+        print("Point not found.")
+
+    # test delete  
+    print(f"\nDeleting point ({search_point.x}, {search_point.y})")
+    tree.delete(search_point)
+    print("\nUpdated Quadtree structure:")
+    print_tree(tree.root)
+
+    # test search after delete
+    found_point = tree.search(search_point)
+    print(f"\nSearch again for point ({search_point.x}, {search_point.y})")
+    if found_point:
+        print("Point found!")
+    else:  
+        print("Point not found.")
 
 if __name__ == "__main__":
     main()

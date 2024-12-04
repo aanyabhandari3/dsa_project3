@@ -1,7 +1,7 @@
 """quadtree.py: DSA Project 3 - Quadtree class."""
 
 __author__ = "Preston Hemmy"
-__version__ = "1.0"
+__version__ = "2.0"
 
 from node import Node, Flyweight
 
@@ -66,19 +66,70 @@ class Quadtree:
     """
     Search for given x-y coordinate in tree
     @param point: x-y coordinate point
-    @return void (returns <...> if point not found)
+    @return point is found o.w. None
     """
     def search(self, point):
-        # Todo
+        # check bounds
+        if not self.root.bbox.contains(point):
+            return None
+    
+        # traversal
+        node = self.root
+        while not node.is_leaf():
+            if node.nw.bbox.contains(point):
+                node = node.nw
+            elif node.ne.bbox.contains(point):
+                node = node.ne
+            elif node.sw.bbox.contains(point):
+                node = node.sw
+            else:
+                node = node.se
 
-        pass
+        # check if found
+        if point in node.points:
+            return point
+        
+        return None
 
     """
-    Delete given x-y coordinate from tree
+    Delete given x-y coordinate from quadtree
     @param point: x-y coordinate point
-    @return void (returns <...> if point not found)
+    @return bool indicating successful removal from quadtree
     """
     def delete(self,point):
-        # Todo
+        # check bounds
+        if not self.root.bbox.contains(point):
+            return False
+    
+        # traversal
+        node = self.root
+        parent = None
+        while not node.is_leaf():
+            parent = node                       # track parent
+            if node.nw.bbox.contains(point):
+                node = node.nw
+            elif node.ne.bbox.contains(point):
+                node = node.ne
+            elif node.sw.bbox.contains(point):
+                node = node.sw
+            else:
+                node = node.se
 
-        pass
+        # check if found
+        if point in node.points:
+            node.points.remove(point)
+
+            # if parent contains less leaf nodes than capacity, then merge leaf nodes
+            while parent is not None:
+                if len(parent.nw.points) + len(parent.ne.points) + len(parent.sw.points) + len(parent.se.points) <= parent.capacity:
+                    parent.points = parent.nw.points | parent.ne.points | parent.sw.points | parent.se.points
+                    parent.nw = parent.ne = parent.sw = parent.se = self.flyweight
+                    parent.divided = False
+                    node = parent
+                    parent = None
+                else:
+                    break
+
+            return True
+
+        return False
