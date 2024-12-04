@@ -4,8 +4,7 @@ __author__ = "Preston Hemmy"
 __version__ = "1.0"
 
 import tkinter as tk
-from GUI.data_filters import DataFilters
-from GUI.map_view import MapView
+from tkinter import ttk
 
 class MainWindow(tk.Tk):
     def __init__(self):
@@ -13,39 +12,43 @@ class MainWindow(tk.Tk):
         self.title("Bird Migration Spation Indexing")
         self.geometry("800x600")
 
-        self.data_filters = DataFilters(self, on_filter_change=self.handle_filter_change)
-        self.map_view = MapView(self)
-        self.search_entry = None
+        self.search_entry = None                # search field
+        self.performance_comparison = None      # dict
+        self.summary_label = None               # summary text
 
         self.create_widgets()
 
-    """
-    Creates wireframe window visual
-    @param void
-    @return void
-    """
     def create_widgets(self):
-        # map view
-        map_frame = tk.Frame(self, bg="white", width=600, height=400)
-        map_frame.pack(pady=20)
-        self.map_view.pack(in_=map_frame)
-
-        # filters
-        filter_frame = tk.Frame(self)
-        filter_frame.pack(pady=10)
-        filter_label = tk.Label(filter_frame, text="Data Filters")
-        filter_label.pack()
-        self.data_filters.pack(pady=10)
-
         # search bar
         search_frame = tk.Frame(self)
         search_frame.pack(pady=10)
-        search_label = tk.Label(search_frame, text="Search:")
+        search_label = tk.Label(search_frame, text="Number of data points:")
         search_label.pack(side=tk.LEFT)
-        self.search_entry = tk.Entry(search_frame, width=30)
+        self.search_entry = tk.Entry(search_frame, width=10)
         self.search_entry.pack(side=tk.LEFT)
-        search_button = tk.Button(search_frame, text="Search", command=self.handle_search)
+        search_button = tk.Button(search_frame, text="Run Benchmark", command=self.handle_search)
         search_button.pack(side=tk.LEFT)
+
+        # comparison section
+        comparison_frame = ttk.LabelFrame(self, text="Performance Comparison")
+        comparison_frame.pack(pady=10)
+
+        comparison_table = ttk.Treeview(comparison_frame, columns=("quadtree", "spatial_hashing"), show="headings")
+        comparison_table.heading("quadtree", text="Quadtree")
+        comparison_table.heading("spatial_hashing", text="Spatial Hashing")
+        comparison_table.insert("", "end", values=("", ""), tags=("insert",))
+        comparison_table.insert("", "end", values=("", ""), tags=("search",))
+        comparison_table.insert("", "end", values=("", ""), tags=("delete",))
+        comparison_table.pack()
+
+        self.performance_comparison = comparison_table
+
+        # summary section
+        summary_frame = ttk.LabelFrame(self, text="Summary")
+        summary_frame.pack(pady=10)
+
+        self.summary_label = tk.Label(summary_frame, text="", justify=tk.LEFT)
+        self.summary_label.pack()
 
     """
     Handles user search button interaction
@@ -53,41 +56,51 @@ class MainWindow(tk.Tk):
     @return void
     """
     def handle_search(self):
-        query = self.search_entry.get()
-        selected_species = self.data_filters.get_selected_species()
-        selected_locations = self.data_filters.get_selected_locations()
-        
-        if query or selected_species or selected_locations:
-            filtered_data = self.filter_data(query=query, species=selected_species, locations=selected_locations)
-            self.map_view.update_data_points(filtered_data)
+        num_points = self.search_entry.get()
+        if num_points.isdigit():
+            num_points = int(num_points)
+            self.run_benchmark(num_points)
+        else:
+            print("Invalid input. Please enter a valid number of data points.")
 
     """
-    Handles user filter "Apply Filters" button interaction
-    @param void
+    Calculate and display benchmarks
+    @param num_points to run through benchmark test
     @return void
     """
-    def handle_filter_change(self):
-        selected_species = self.data_filters.get_selected_species()
-        selected_locations = self.data_filters.get_selected_locations()
-        filtered_data = self.filter_data(species=selected_species, locations=selected_locations)
-        self.map_view.update_data_points(filtered_data)
+    def run_benchmark(self, num_points):
+        # TODO: Implement benchmark logic for quadtree and spatial hashing
+        # Update the performance comparison table with the benchmark results
+        quadtree_insert_time = 0.5  # Placeholder value
+        spatial_hashing_insert_time = 0.3  # Placeholder value
+        quadtree_search_time = 0.2  # Placeholder value
+        spatial_hashing_search_time = 0.1  # Placeholder value
+        quadtree_delete_time = 0.4  # Placeholder value
+        spatial_hashing_delete_time = 0.2  # Placeholder value
+
+        self.performance_comparison.item("insert", values=(quadtree_insert_time, spatial_hashing_insert_time))
+        self.performance_comparison.item("search", values=(quadtree_search_time, spatial_hashing_search_time))
+        self.performance_comparison.item("delete", values=(quadtree_delete_time, spatial_hashing_delete_time))
+
+        self.update_summary(quadtree_insert_time, spatial_hashing_insert_time,
+                            quadtree_search_time, spatial_hashing_search_time,
+                            quadtree_delete_time, spatial_hashing_delete_time)
 
     """
-    Filter data based on user specified criteria (switch Quadtree to B-Tree implementation and vice versa)
-    @param query "keyword/phrase" to filter
-    @param species to filter
-    @param locations to filter
-    @return list of filtered data
+    Display benchmark results summary
+    @param quadtree_insert_time, spatial_hashing_insert_time, quadtree_search_time,
+            spatial_hashing_search_time, quadtree_delete_time, spatial_hashing_delete_time
+    @return void
     """
-    def filter_data(self, query=None, species=None, locations=None):
-        # TODO. Implement the actual filtering logic based on the selected indexing method (quadtree or B-tree)
-        # For now, return dummy data
-        filtered_data = []
-        # Placeholder code for demonstration purposes
-        if query:
-            filtered_data.append(f"Filtered by query: {query}")
-        if species:
-            filtered_data.append(f"Filtered by species: {species}")
-        if locations:
-            filtered_data.append(f"Filtered by locations: {locations}")
-        return filtered_data
+    def update_summary(self, quadtree_insert_time, spatial_hashing_insert_time,
+                       quadtree_search_time, spatial_hashing_search_time,
+                       quadtree_delete_time, spatial_hashing_delete_time):
+        insert_winner = "Quadtree" if quadtree_insert_time < spatial_hashing_insert_time else "Spatial Hashing"
+        search_winner = "Quadtree" if quadtree_search_time < spatial_hashing_search_time else "Spatial Hashing"
+        delete_winner = "Quadtree" if quadtree_delete_time < spatial_hashing_delete_time else "Spatial Hashing"
+
+        summary_text = f"Insert: {insert_winner} performs better.\n"
+        summary_text += f"Search: {search_winner} performs better.\n"
+        summary_text += f"Delete: {delete_winner} performs better."
+
+        self.summary_label.config(text=summary_text)
