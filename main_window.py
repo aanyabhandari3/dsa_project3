@@ -69,23 +69,22 @@ class MainWindow(tk.Tk):
     @return void
     """
     def run_benchmark(self, num_points):
-        # TODO: Implement benchmark logic for quadtree and spatial hashing
+        # TODO. Implement benchmark logic for quadtree and spatial hashing
         # Update the performance comparison table with the benchmark results
-        quadtree_insert_time = 0.5  # Placeholder value
-        spatial_hashing_insert_time = 0.3  # Placeholder value
-        quadtree_search_time = 0.2  # Placeholder value
-        spatial_hashing_search_time = 0.1  # Placeholder value
-        quadtree_delete_time = 0.4  # Placeholder value
-        spatial_hashing_delete_time = 0.2  # Placeholder value
+        quadtree_insert_time = 0.5
+        spatial_hashing_insert_time = 0.3
+        quadtree_search_time = 0.2
+        spatial_hashing_search_time = 0.1
+        quadtree_delete_time = 0.4
+        spatial_hashing_delete_time = 0.2
 
-        self.performance_comparison.item("insert", values=(quadtree_insert_time, spatial_hashing_insert_time))
-        self.performance_comparison.item("search", values=(quadtree_search_time, spatial_hashing_search_time))
-        self.performance_comparison.item("delete", values=(quadtree_delete_time, spatial_hashing_delete_time))
+        self.performance_comparison.item(self.performance_comparison.get_children()[0], values=(quadtree_insert_time, spatial_hashing_insert_time))
+        self.performance_comparison.item(self.performance_comparison.get_children()[1], values=(quadtree_search_time, spatial_hashing_search_time))
+        self.performance_comparison.item(self.performance_comparison.get_children()[2], values=(quadtree_delete_time, spatial_hashing_delete_time))
 
         self.update_summary(quadtree_insert_time, spatial_hashing_insert_time,
                             quadtree_search_time, spatial_hashing_search_time,
                             quadtree_delete_time, spatial_hashing_delete_time)
-
     """
     Display benchmark results summary
     @param quadtree_insert_time, spatial_hashing_insert_time, quadtree_search_time,
@@ -105,7 +104,7 @@ class MainWindow(tk.Tk):
 
         self.summary_label.config(text=summary_text)
 
-# TO RUN uncomment
+# to run uncomment:
 # def main():
 #     window = MainWindow()
 #     window.mainloop()
